@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ViewModelPresentation</string>
+    <string name="reset">Reset</string>
+    <string name="public_photos">Public Photos</string>
+    <string name="vault">Vault</string>
+    <string name="add_to_vault">Add To Vault</string>
+    <string name="delete_photo">Delete Photo</string>
+    <string name="image_name">Image Name</string>
+</resources>
