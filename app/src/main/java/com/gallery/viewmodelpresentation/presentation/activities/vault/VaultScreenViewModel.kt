@@ -3,8 +3,8 @@ package com.gallery.viewmodelpresentation.presentation.activities.vault
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.gallery.viewmodelpresentation.core.interfaces.MyPhotoListener
-import com.gallery.viewmodelpresentation.core.interfaces.ToastListener
 import com.gallery.viewmodelpresentation.domain.repository.VaultRepository
+import com.gallery.viewmodelpresentation.domain.use_case.ToastUseCase
 import com.gallery.viewmodelpresentation.presentation.activities.vault.components.VaultScreenEvents
 import com.gallery.viewmodelpresentation.presentation.activities.vault.components.VaultScreenState
 import com.gallery.viewmodelpresentation.presentation.base.BaseUiViewModel
@@ -13,17 +13,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class VaultScreenViewModel @Inject constructor(
-    private val repository: VaultRepository
+    private val repository: VaultRepository,
+    private val toast: ToastUseCase
 ) : BaseUiViewModel<VaultScreenEvents>() {
 
     private val mutableState = MutableStateFlow(VaultScreenState())
     val state = mutableState.asStateFlow()
-
-    private var toastListener: ToastListener? = null
 
     val listener = object : MyPhotoListener {
         override fun onDelete(position: Int) {
@@ -35,9 +35,9 @@ class VaultScreenViewModel @Inject constructor(
         }
     }
 
-    private fun loadPhotos(context: Context) {
+    private fun loadPhotos(file: File) {
         viewModelScope.launch {
-            val list = repository.fetchFiles(context.filesDir)
+            val list = repository.fetchFiles(file)
             mutableState.update {
                 it.copy(
                     vaultPhotos = list
@@ -55,12 +55,13 @@ class VaultScreenViewModel @Inject constructor(
             }
 
             is VaultScreenEvents.LoadPhotos -> {
-                loadPhotos(event.context)
+                loadPhotos(event.file )
             }
 
             is VaultScreenEvents.Delete -> {
                 deleteThisFile(event.pos)
             }
+
         }
     }
 
@@ -81,17 +82,13 @@ class VaultScreenViewModel @Inject constructor(
         }
     }
 
-    fun setToastListener(listener: ToastListener) {
-        toastListener = listener
-    }
-
     private fun exportFile(pos: Int, dest: String) {
         val prevState = state.value
         val model = prevState.vaultPhotos[pos]
         viewModelScope.launch {
             val moved = repository.moveFiles(model.path, dest, false)
             if (moved) {
-                toastListener?.onToast("Photo Unlocked")
+                toast("Photo Unlocked")
             }
         }
     }

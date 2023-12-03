@@ -9,7 +9,9 @@ import com.bumptech.glide.RequestManager
 import com.gallery.viewmodelpresentation.core.interfaces.MyPhotoListener
 import com.gallery.viewmodelpresentation.databinding.PhotosRowBinding
 import com.gallery.viewmodelpresentation.domain.model.PhotoModel
-import java.util.Calendar
+import com.gallery.viewmodelpresentation.domain.util.path_helper.components.MediaType
+import com.gallery.viewmodelpresentation.domain.util.path_helper.PathHelper
+import com.gallery.viewmodelpresentation.domain.util.path_helper.components.StorageAreaType
 import javax.inject.Inject
 
 private val mCallback = object : DiffUtil.ItemCallback<PhotoModel>() {
@@ -24,7 +26,7 @@ private val mCallback = object : DiffUtil.ItemCallback<PhotoModel>() {
 }
 
 class MyPhotosAdapter @Inject constructor(
-    private val glide: RequestManager
+    private val glide: RequestManager, private val pathHelper: PathHelper
 ) : ListAdapter<PhotoModel, MyPhotosAdapter.MyViewHolder>(mCallback) {
 
     var mListener: MyPhotoListener? = null
@@ -47,8 +49,10 @@ class MyPhotosAdapter @Inject constructor(
             binding.lockIcon.setOnClickListener {
                 val pos = adapterPosition
                 if (pos != -1) {
-                    val dest =
-                        it.context.filesDir.path + "/${Calendar.getInstance().timeInMillis}.jpg"
+                    val model = getItem(pos)
+                    val dest = pathHelper.getPathWithFileName(
+                        model.name, StorageAreaType.Private(MediaType.PHOTOS)
+                    )
                     mListener?.onLockIt(dest, pos)
                 }
             }
@@ -63,9 +67,7 @@ class MyPhotosAdapter @Inject constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
             PhotosRowBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }

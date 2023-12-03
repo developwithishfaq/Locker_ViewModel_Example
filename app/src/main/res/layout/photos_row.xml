@@ -63,8 +63,8 @@
 
             <TextView
                 android:id="@+id/lockIcon"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="125dp"
+                android:layout_height="45dp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@drawable/blue_bg"
                 android:gravity="center"
@@ -74,7 +74,6 @@
                 app:layout_constraintEnd_toStartOf="@id/deleteIcon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <TextView
                 android:id="@+id/deleteIcon"

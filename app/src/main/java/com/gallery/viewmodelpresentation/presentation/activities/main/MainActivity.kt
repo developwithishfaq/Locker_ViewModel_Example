@@ -39,8 +39,6 @@ class MainActivity : BasePermissionsActivity() {
         viewModel.init(intentLauncher)
         initAdapter()
 
-        // Permissions
-
         binding.vaultBtn.setOnClickListener {
             startActivity(Intent(mContext, VaultActivity::class.java))
         }
