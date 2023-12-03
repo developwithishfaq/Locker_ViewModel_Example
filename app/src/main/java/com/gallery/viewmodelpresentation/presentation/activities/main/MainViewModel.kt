@@ -68,18 +68,29 @@ class MainViewModel @Inject constructor(
 
     private fun movePhoto(pos: Int, destination: String) {
         val prevState = mutableState.value
-        val path = prevState.galleryPhotosList[pos].path
+        val model = prevState.galleryPhotosList[pos]
         viewModelScope.launch {
             deleteLauncher?.let {
-                val moved = galleryRepository.movePhoto(path, destination)
+                val moved = galleryRepository.movePhoto(model.path, destination)
                 if (moved) {
-                    val list = prevState.galleryPhotosList.toMutableList()
-                    list.removeAt(pos)
-                    mutableState.update {
-                        it.copy(
-                            galleryPhotosList = list
-                        )
-                    }
+                    galleryRepository.deletePhoto(
+                        deleteLauncher!!,
+                        model.uri,
+                        object : DeleteExternalStoragePhotoUseCase.DeleteCallback {
+                            override fun onDelete() {
+                                val list = prevState.galleryPhotosList.toMutableList()
+                                list.removeAt(pos)
+                                mutableState.update {
+                                    it.copy(
+                                        galleryPhotosList = list
+                                    )
+                                }
+                            }
+
+                            override fun onCancel() {
+
+                            }
+                        })
                 }
             }
         }

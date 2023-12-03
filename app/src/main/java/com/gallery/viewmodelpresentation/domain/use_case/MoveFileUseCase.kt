@@ -21,7 +21,6 @@ class MoveFileUseCase @Inject constructor(
         return moveFile(source, destination, deleteOriginal)
     }
 
-
     private suspend fun moveFile(
         pathSource: String,
         pathDestination: String,

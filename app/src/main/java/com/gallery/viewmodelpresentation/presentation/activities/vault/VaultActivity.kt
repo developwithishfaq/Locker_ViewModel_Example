@@ -47,11 +47,9 @@ class VaultActivity : BaseActivity() {
                 mAdapter.submitList(state.vaultPhotos)
             }
         }
-
         binding.backArrow.setOnClickListener {
             finish()
         }
-
     }
 
     override fun handleBackPress() {
